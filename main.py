@@ -7,7 +7,12 @@ from collections import OrderedDict
 import pandas as pd
 from ttkwidgets.autocomplete import AutocompleteEntry
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+import customtkinter as ctk
+import itemClass 
+import GUI
 
+loadHistoricalData = False
 itemIds = json.load(open('items-search.json'))
 
 #itemIds = pd.read_json('items-search.json')
@@ -16,22 +21,32 @@ flippingItemNames = json.load(open('flippingItems.json'))
 def main():
 
     flippingitemNames = []
+    items = []
 
+    
 
-    for i in range(len(flippingItemNames)):
-        print(flippingItemNames[i]["name"])
-        itemId = lookupItemId(flippingItemNames[i]["name"])
-        print("item id: " + str(itemId))
+    if(True):
+        for i in range(len(flippingItemNames)):
+            print(flippingItemNames[i]["name"])
+            itemId = lookupItemId(flippingItemNames[i]["name"])
+            print("item id: " + str(itemId))
 
-        historicalData = getHistoricalData(itemId)
-        saveHistoricalPriceToCSV(historicalData, flippingItemNames[i]["name"])
-        # itemPrice = getCurrentPriceOfItem(itemId)
+            items.append(itemClass.item(flippingItemNames[i]["name"], itemId, 0))
 
-        # print("price of " +  flippingItemNames[i]["name"] + ": " + str(itemPrice))
+            flippingitemNames.append(flippingItemNames[i]["name"])
 
+            if(loadHistoricalData):
+                historicalData = getHistoricalData(itemId)
+                saveHistoricalPriceToCSV(historicalData, flippingItemNames[i]["name"])
+                # itemPrice = getCurrentPriceOfItem(itemId)
 
-        flippingitemNames.append(flippingItemNames[i]["name"])
+                # print("price of " +  flippingItemNames[i]["name"] + ": " + str(itemPrice))
 
+                
+    root = Tk()
+    runeScapeGUI = GUI.runeScapeGUI(root, flippingitemNames)
+
+    print(items[0].__str__())
 
     # TransposedItems = itemIds.T
 
@@ -41,29 +56,7 @@ def main():
 
     # print(sortedItems.head(5))
 
-    root = Tk()
-    root.title('Runescape Stock Market')
-    myCanvas = Canvas(root, bg="white", height=300, width=300)
-
-    myCanvas.pack()
-
-
-    frame = Frame(root, bg='#f25252')
-    frame.pack(expand=True)
-
-    entry = AutocompleteEntry(
-    frame, 
-    width=30, 
-    font=('Times', 18),
-    completevalues=flippingitemNames
-    )
-    entry.pack()
-
     mainloop()
-
-
-    #print(itemIds[0])
-
 
 def updatePrices():
 
@@ -107,21 +100,12 @@ def getHistoricalData(itemId):
 
         historyPrices[i] = itemPrice
 
-    #plt.plot(historyPrices)
-    #plt.show()
-
     return historyPrices
 
 
 def saveHistoricalPriceToCSV(priceHistory, itemName):
 
     priceHistory.tofile('pastPrices/' + itemName + '.csv', sep = ',')
-
-
-
-    
-
-
 
 def lookupItemId(itemName):
     itemId = 0
@@ -136,7 +120,7 @@ def lookupItemId(itemName):
         except:
             pass
 
-
     return itemId
 
-main()
+if __name__ == "__main__":
+    main()

@@ -23,8 +23,6 @@ def main():
     flippingitemNames = []
     items = []
 
-    
-
     if(True):
         for i in range(len(flippingItemNames)):
             print(flippingItemNames[i]["name"])

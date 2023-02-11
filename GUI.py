@@ -48,8 +48,7 @@ class runeScapeGUI():
         canvas.get_tk_widget().pack()
 
         frame = Frame(self.master, bg='#f25252')
-        frame.pack(expand=True)
-
+        
         entry = AutocompleteEntry(
         frame, 
         width=30, 
@@ -58,6 +57,8 @@ class runeScapeGUI():
         )
         entry.bind('<FocusOut>', self.callback)
         entry.pack()
+
+        frame.pack(expand=True)
 
     def callback(self, event):
         print("clicked!")

@@ -23,8 +23,6 @@ def main():
     flippingitemNames = []
     items = []
 
-    
-
     if(True):
         for i in range(len(flippingItemNames)):
             print(flippingItemNames[i]["name"])
@@ -59,7 +57,6 @@ def main():
     mainloop()
 
 def updatePrices():
-
     todayPrices = np.zeros(2)
 
 
@@ -104,12 +101,10 @@ def getHistoricalData(itemId):
 
 
 def saveHistoricalPriceToCSV(priceHistory, itemName):
-
     priceHistory.tofile('pastPrices/' + itemName + '.csv', sep = ',')
 
 def lookupItemId(itemName):
     itemId = 0
-
     for i in range(len(itemIds)):
 
         try:

@@ -6,6 +6,12 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 import numpy as np
 from numpy import genfromtxt
 from ttkwidgets.autocomplete import AutocompleteEntry
+from enum import Enum
+
+class multipliers(Enum):
+    THOUSAND = 1
+    MILLION = 2
+    BILLION = 3
 
 class runeScapeGUI():
     def __init__(self, master, flippingitemNames):
@@ -19,7 +25,8 @@ class runeScapeGUI():
 
         self.master.title('Runescape Stock Market')
 
-        self.data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        self.totalGraphData = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        self.multiplier = Enum()
 
         # the figure that will contain the plot
         self.fig = plt.Figure(figsize = (9, 5),
@@ -29,7 +36,7 @@ class runeScapeGUI():
         self.plot1 = self.fig.add_subplot(111)
     
         # plotting the graph
-        self.plot1.plot(self.data)
+        self.plot1.plot(self.totalGraphData)
 
         # creating the Tkinter canvas
         # containing the Matplotlib figure
@@ -63,15 +70,25 @@ class runeScapeGUI():
         frame.pack(expand=True)
 
     def callback(self, event):
-        print("clicked!")
-
         itemName = self.entry.get()
-        graphData = self.loadHistoricData(itemName)
+        self.totalGraphData = self.loadHistoricData(itemName)
+
+        self.drawGraph(self.totalGraphData, 0)
+
+
+
+        
+
+    def drawGraph(self, graphData, mode):
+
+        if(graphData[0] > 1_000_000):
+            graphData = graphData / 1_000_000
+
+        plotData = graphData
+
         self.plot1.cla()
-        self.plot1.plot(graphData)
-
+        self.plot1.plot(plotData)
         self.canvas.draw()
-
 
     def loadHistoricData(self, itemName):
         filePath = "pastPrices/" + itemName + ".csv"

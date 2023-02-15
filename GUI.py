@@ -26,7 +26,7 @@ class runeScapeGUI():
         self.master.title('Runescape Stock Market')
 
         self.totalGraphData = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        self.multiplier = Enum()
+        priceSuffixes = ["k", "m", "b"]
 
         # the figure that will contain the plot
         self.fig = plt.Figure(figsize = (9, 5),
@@ -76,18 +76,30 @@ class runeScapeGUI():
         self.drawGraph(self.totalGraphData, 0)
 
 
-
-        
-
     def drawGraph(self, graphData, mode):
 
-        if(graphData[0] > 1_000_000):
+        if(graphData[0] > 1_000_000_000):
+            graphData = graphData / 1_000_000_000
+            suffix = "b"
+        elif(graphData[0] > 1_000_000):
             graphData = graphData / 1_000_000
+            suffix = "m"
+        elif(graphData[0] > 1_000):
+            graphData = graphData / 1_000
+            suffix = "k"
 
         plotData = graphData
 
         self.plot1.cla()
         self.plot1.plot(plotData)
+
+        y_ticks = self.plot1.get_yticks()
+        new_y_ticks = []
+        for i in range(len(y_ticks)):
+            new_y_ticks.append(str(y_ticks[i]) + suffix)
+
+        self.plot1.set_yticklabels(new_y_ticks)
+
         self.canvas.draw()
 
     def loadHistoricData(self, itemName):

@@ -139,7 +139,8 @@ class runeScapeGUI():
         y_ticks = self.plot1.get_yticks()
         new_y_ticks = []
         for i in range(len(y_ticks)):
-            new_y_ticks.append(str(y_ticks[i]) + suffix)
+            y_ticks[i] = y_ticks[i]
+            new_y_ticks.append(f'{y_ticks[i]:g}' + suffix)
 
         self.plot1.set_yticklabels(new_y_ticks)
 

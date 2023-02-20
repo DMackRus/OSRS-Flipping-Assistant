@@ -25,6 +25,8 @@ class runeScapeGUI():
 
         self.frame = tk.Frame(self.master)
         self.frame.pack()
+        self.displayMode = 0
+        self.displayedItemName = "Twisted bow"
 
         self.master.title('Runescape Stock Market')
 
@@ -39,13 +41,14 @@ class runeScapeGUI():
         self.plot1 = self.fig.add_subplot(111)
     
         # plotting the graph
-        self.plot1.plot(self.totalGraphData)
+        
 
         # creating the Tkinter canvas
         # containing the Matplotlib figure
         self.canvas = FigureCanvasTkAgg(self.fig,
                                 master = self.master)  
-        self.canvas.draw()
+
+        self.updatePlot(self.displayedItemName, self.displayMode)
   
         # placing the canvas on the Tkinter window
         self.canvas.get_tk_widget().pack()
@@ -67,19 +70,56 @@ class runeScapeGUI():
         font=('Times', 18),
         completevalues=self.itemsManager.flippingItemNames,
         )
-        self.entry.bind('<FocusOut>', self.callback)
+        self.entry.bind('<FocusOut>', self.searchBar_callback)
         self.entry.pack()
 
         frame.pack(expand=True)
 
-    def callback(self, event):
-        itemName = self.entry.get()
-        self.totalGraphData = self.loadHistoricData(itemName)
+        modes = ('All', '6 Months', '3 Months', 'Month', 'Week')
+        var = tk.Variable(value=modes)
+        listbox = tk.Listbox(
+            self.master, 
+            listvariable=var, 
+            height=6,
+            selectmode=tk.SINGLE,
+        )
+        listbox.pack(expand=True, fill=tk.BOTH)
+        listbox.bind('<<ListboxSelect>>', self.displayMode_callback)
 
-        self.drawGraph(self.totalGraphData, 0)
+    def displayMode_callback(self, event):
+        self.displayMode = event.widget.curselection()[0]
+        self.updatePlot(self.displayedItemName, self.displayMode)
+
+    def searchBar_callback(self, event):
+        self.displayedItemName = self.entry.get()
+
+        self.updatePlot(self.displayedItemName, self.displayMode)
+
+    def updatePlot(self, itemName, displayMode=0):
+        graphData = self.loadHistoricData(itemName)
+        graphData = self.reduceDisplayData(graphData, displayMode)
+        self.drawGraph(graphData)
 
 
-    def drawGraph(self, graphData, mode):
+    # mode 0 = all data
+    # mode 1 = last week
+    # mode 2 = last 1 month
+    # mode 3 = 1 month
+    # mode 4 = 3 months
+    def reduceDisplayData(self, graphData, mode):
+        if(mode == 0):
+            return graphData
+        elif(mode == 1):
+            return graphData[-180:]
+        elif(mode == 2):
+            return graphData[-90:]
+        elif(mode == 3):
+            return graphData[-30:]
+        elif(mode == 4):
+            return graphData[-7:]
+
+
+    def drawGraph(self, graphData):
 
         if(graphData[0] > 1_000_000_000):
             graphData = graphData / 1_000_000_000

@@ -7,6 +7,8 @@ import numpy as np
 from numpy import genfromtxt
 from ttkwidgets.autocomplete import AutocompleteEntry
 from enum import Enum
+import json
+from itemsManagerClass import itemsManager
 
 class multipliers(Enum):
     THOUSAND = 1
@@ -14,11 +16,12 @@ class multipliers(Enum):
     BILLION = 3
 
 class runeScapeGUI():
-    def __init__(self, master, flippingitemNames):
+    def __init__(self, master, itemsManager):
         self.master = master
         self.master.title("GUI")
         self.master.geometry("700x700")
         self.master.resizable(True, True)
+        self.itemsManager = itemsManager
 
         self.frame = tk.Frame(self.master)
         self.frame.pack()
@@ -62,7 +65,7 @@ class runeScapeGUI():
         frame, 
         width=30, 
         font=('Times', 18),
-        completevalues=flippingitemNames,
+        completevalues=self.itemsManager.flippingItemNames,
         )
         self.entry.bind('<FocusOut>', self.callback)
         self.entry.pack()

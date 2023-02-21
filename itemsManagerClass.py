@@ -3,6 +3,7 @@ import requests
 from itemClass import item
 import numpy as np
 import pandas as pd
+import os
 
 class itemsManager():
     def __init__(self):
@@ -16,7 +17,26 @@ class itemsManager():
 
         for i in range(len(self.flippingItemNames)):
             itemId = self.lookupItemId(self.flippingItemNames[i])
-            self.items.append(item(self.flippingItemNames[i], itemId, 0))
+
+            if(os.path.exists('items/' + self.flippingItemNames[i] + '/trackData.json')):
+                with open('items/' + self.flippingItemNames[i] + '/trackData.json', 'r') as outfile:
+                    json_data = json.load(outfile)
+
+                self.items.append(item(self.flippingItemNames[i], itemId, json_data["high price alert"], json_data["low price alert"], json_data["last update date"]))
+            else:
+                self.createJsonFile(self.flippingItemNames[i])
+
+                self.items.append(item(self.flippingItemNames[i], itemId, 0, 0, 0))
+
+    def createJsonFile(self, itemName):
+        baseDir = "items/"
+
+        os.makedirs(baseDir + itemName, exist_ok=True)
+
+        temp = '{ "low price alert":0, "high price alert":0, "last update date":"0"}'
+
+        with open('items/' + itemName + '/trackData.json', 'w') as outfile:
+            outfile.write(temp)
 
     def getCurrentPriceOfItem(self):
 
@@ -28,7 +48,7 @@ class itemsManager():
 
         api_return = requests.get(request_url).json()
 
-        print(api_return["average"])
+        #print(api_return["average"])
         #print(list(api_return["average"])[-1])
         stringPrice = str(api_return["average"][list(api_return["average"])[-1]])
 
@@ -57,7 +77,6 @@ class itemsManager():
 
         return historyPrices
 
-
     def saveHistoricalPriceToCSV(self, priceHistory, itemName):
         priceHistory.tofile('pastPrices/' + itemName + '.csv', sep = ',')
 
@@ -66,7 +85,6 @@ class itemsManager():
         for i in range(len(self.itemIds)):
             try:
                 if(self.itemIds[str(i)]["name"] == itemName):
-                    print(self.itemIds[str(i)]["id"])
                     itemId = int(self.itemIds[str(i)]["id"])
                     break
             except:

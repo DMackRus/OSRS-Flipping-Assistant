@@ -4,15 +4,22 @@ import json
 import time
 
 class item():
-    def __init__(self, name, id, price):
+    def __init__(self, name, id, highPrice, lowPrice, lastUpdateDate):
         self.name = name
         self.id = id
-        self.price = price
 
+        self.highPrice = highPrice
+        self.lowPrice = lowPrice
         self.highPriceAlert = False
         self.lowPriceAlert = False
-        self.highPrice = 0
-        self.lowPrice = 0
+        self.lastUpdateDate = lastUpdateDate
+
+        if(self.highPrice != 0):
+            self.highPriceAlert = True
+
+        if(self.lowPrice != 0):
+            self.lowPriceAlert = True
+
 
     def __str__(self):
         return "Item Name: " + self.name + " Item ID: " + str(self.id) + " Item Price: " + str(self.price)

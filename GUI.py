@@ -100,12 +100,6 @@ class runeScapeGUI():
         graphData = self.reduceDisplayData(graphData, displayMode)
         self.drawGraph(graphData)
 
-
-    # mode 0 = all data
-    # mode 1 = last week
-    # mode 2 = last 1 month
-    # mode 3 = 1 month
-    # mode 4 = 3 months
     def reduceDisplayData(self, graphData, mode):
         if(mode == 0):
             return graphData

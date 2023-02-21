@@ -10,13 +10,30 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 #import customtkinter as ctk
 from itemsManagerClass import itemsManager
 import GUI
+import os
 
 def main():
+    baseDir = "items/"
                 
     root = Tk()
     RS_itemsManager = itemsManager()
     print("made items manager")
     print(RS_itemsManager.flippingItemNames)
+
+    # test = {"low price alert":"0","high price alert":"0","last update date":"0"}
+    # test = '{ "low price alert":10, "high price alert":0, "last update date":"0"}'
+    # testjson = json.loads(test)
+    # print(testjson["low price alert"])
+
+    # with open('items/Abyssal whip/json_data.json', 'w') as outfile:
+    #     outfile.write(test)
+
+    # with open('json_data.json', 'w') as outfile:
+    #     json.dump(test, outfile)
+    #print(testjson[0])
+    # for i in range(len(RS_itemsManager.flippingItemNames)):
+    #     os.makedirs(baseDir + RS_itemsManager.flippingItemNames[i], exist_ok=True)
+
     print("--------------------------------------- printed flipping item names -----------------------------")
     runeScapeGUI = GUI.runeScapeGUI(root, RS_itemsManager)
 

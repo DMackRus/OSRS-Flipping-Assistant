@@ -8,7 +8,7 @@ from numpy import genfromtxt
 from ttkwidgets.autocomplete import AutocompleteEntry
 from enum import Enum
 import json
-from itemsManagerClass import itemsManager
+from itemsManagerClass import ItemsManager
 
 class multipliers(Enum):
     THOUSAND = 1
@@ -16,12 +16,12 @@ class multipliers(Enum):
     BILLION = 3
 
 class runeScapeGUI():
-    def __init__(self, master, itemsManager):
+    def __init__(self, master, ItemsManager):
         self.master = master
         self.master.title("GUI")
         self.master.geometry("700x700")
         self.master.resizable(True, True)
-        self.itemsManager = itemsManager
+        self.itemsManager = ItemsManager
 
         self.frame = tk.Frame(self.master)
         self.frame.pack()

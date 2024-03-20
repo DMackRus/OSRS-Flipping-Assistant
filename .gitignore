@@ -1,0 +1,8 @@
+# Ignore contents of data folder, but push the data folder itself
+data/*
+
+/documentation_images
+
+/__pycache__
+
+.pyc*

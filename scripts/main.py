@@ -8,17 +8,30 @@ from ttkwidgets.autocomplete import AutocompleteEntry
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 #import customtkinter as ctk
-from itemsManagerClass import itemsManager
-import GUI
-import os
+from itemsManagerClass import ItemsManager
+import GUI as GUI
 
 def main():
     baseDir = "items/"
                 
     root = Tk()
-    RS_itemsManager = itemsManager()
+
+    RS_itemsManager = ItemsManager()
     print("made items manager")
     print(RS_itemsManager.flippingItemNames)
+
+    itemids = RS_itemsManager.itemIds
+
+    for i in range(len(RS_itemsManager.flippingItemNames)):
+        print(i)
+        historical_data = RS_itemsManager.get_historical_data(RS_itemsManager.lookupItemId(RS_itemsManager.flippingItemNames[i]))
+        RS_itemsManager.save_price_data(historical_data, RS_itemsManager.flippingItemNames[i])
+        # os.makedirs(baseDir + RS_itemsManager.flippingItemNames[i], exist_ok=True)
+
+
+
+
+
 
     # test = {"low price alert":"0","high price alert":"0","last update date":"0"}
     # test = '{ "low price alert":10, "high price alert":0, "last update date":"0"}'
@@ -34,8 +47,8 @@ def main():
     # for i in range(len(RS_itemsManager.flippingItemNames)):
     #     os.makedirs(baseDir + RS_itemsManager.flippingItemNames[i], exist_ok=True)
 
-    print("--------------------------------------- printed flipping item names -----------------------------")
-    runeScapeGUI = GUI.runeScapeGUI(root, RS_itemsManager)
+    # print("--------------------------------------- printed flipping item names -----------------------------")
+    # runeScapeGUI = GUI.runeScapeGUI(root, RS_itemsManager)
 
     # TransposedItems = itemIds.T
 
@@ -45,7 +58,7 @@ def main():
 
     # print(sortedItems.head(5))
 
-    mainloop()
+    # mainloop()
 
 def updatePrices():
     todayPrices = np.zeros(2)

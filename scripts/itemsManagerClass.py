@@ -4,8 +4,10 @@ from itemClass import item
 import numpy as np
 import pandas as pd
 import os
+import utils
 
-class itemsManager():
+class ItemsManager():
+
     def __init__(self):
         self.itemIds = json.load(open('items-search.json'))
         tempFlipOpen = json.load(open('flippingItems.json'))
@@ -28,7 +30,7 @@ class itemsManager():
 
                 self.items.append(item(self.flippingItemNames[i], itemId, 0, 0, 0))
 
-    def createJsonFile(self, itemName):
+    def create_json_file(self, itemName):
         baseDir = "items/"
 
         os.makedirs(baseDir + itemName, exist_ok=True)
@@ -38,7 +40,7 @@ class itemsManager():
         with open('items/' + itemName + '/trackData.json', 'w') as outfile:
             outfile.write(temp)
 
-    def getCurrentPriceOfItem(self):
+    def get_current_price_of_item(self):
 
         base_url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/"
 
@@ -48,15 +50,13 @@ class itemsManager():
 
         api_return = requests.get(request_url).json()
 
-        #print(api_return["average"])
-        #print(list(api_return["average"])[-1])
         stringPrice = str(api_return["average"][list(api_return["average"])[-1]])
 
         itemPrice = float(stringPrice)
 
         return itemPrice
 
-    def getHistoricalData(self, itemId):
+    def get_historical_data(self, itemId):
 
         base_url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/"
 
@@ -66,19 +66,25 @@ class itemsManager():
 
         api_return = requests.get(request_url).json()
 
-        historyPrices = np.zeros(len(api_return["average"]))
+        history_prices = {
+            "time_stamps": [],
+            "values": []
+        }
 
-        for i in range(len(api_return["average"])):
-            stringPrice = str(api_return["average"][list(api_return["average"])[i]])
+        for key, val in api_return["daily"].items():
+            history_prices["time_stamps"].append(key)
+            history_prices["values"].append(val)
 
-            itemPrice = float(stringPrice)
+        return history_prices
 
-            historyPrices[i] = itemPrice
+    def save_price_data(self, price_data, item_name):
+        #check if directory exists
+        directory = 'data/' + item_name
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
-        return historyPrices
-
-    def saveHistoricalPriceToCSV(self, priceHistory, itemName):
-        priceHistory.tofile('pastPrices/' + itemName + '.csv', sep = ',')
+        utils.save_data(price_data, directory + '/price_history.pkl')
+        # priceHistory.tofile('pastPrices/' + itemName + '.csv', sep = ',')
 
     def lookupItemId(self, itemName):
         itemId = 0

@@ -3,6 +3,6 @@ data/*
 
 /documentation_images
 
-/__pycache__
+__pycache__/
 
 .pyc*

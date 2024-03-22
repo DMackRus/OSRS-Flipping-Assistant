@@ -23,27 +23,6 @@ class ItemsManager():
 
         print(self.custom_items)
 
-        # self.itemIds = json.load(open('items-search.json'))
-        # tempFlipOpen = json.load(open('flippingItems.json'))
-        # self.flippingItemNames = []
-        # for i in range(len(tempFlipOpen)):
-        #     self.flippingItemNames.append(tempFlipOpen[i]["name"])
-
-        # self.items = []
-
-        # for i in range(len(self.flippingItemNames)):
-        #     itemId = self.lookupItemId(self.flippingItemNames[i])
-
-        #     if(os.path.exists('items/' + self.flippingItemNames[i] + '/trackData.json')):
-        #         with open('items/' + self.flippingItemNames[i] + '/trackData.json', 'r') as outfile:
-        #             json_data = json.load(outfile)
-
-        #         self.items.append(item(self.flippingItemNames[i], itemId, json_data["high price alert"], json_data["low price alert"], json_data["last update date"]))
-        #     else:
-        #         self.createJsonFile(self.flippingItemNames[i])
-
-        #         self.items.append(item(self.flippingItemNames[i], itemId, 0, 0, 0))
-
     def create_json_file(self, itemName):
         baseDir = "items/"
 
@@ -99,16 +78,3 @@ class ItemsManager():
 
         utils.save_data(price_data, directory + '/price_history.pkl')
         # priceHistory.tofile('pastPrices/' + itemName + '.csv', sep = ',')
-
-    def lookupItemId(self, itemName):
-        itemId = 0
-        for i in range(len(self.itemIds)):
-            try:
-                if(self.itemIds[str(i)]["name"] == itemName):
-                    itemId = int(self.itemIds[str(i)]["id"])
-                    break
-            except:
-                pass
-
-        return itemId
-

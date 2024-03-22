@@ -13,7 +13,7 @@ Information currently comes from [OSRS wiki](https://runescape.wiki/w/Applicatio
 ## How to use
 1 - Install all dependancies (Matplotlib, tkinter, numpy etc)
 
-2 - Run main.py
+2 - Run OSRS_flipping_assistant.py
 
 ## To do
 ### Immediate ideas
@@ -29,9 +29,11 @@ Information currently comes from [OSRS wiki](https://runescape.wiki/w/Applicatio
 
 - Add a requirements.txt to easily install dependancies
 
+- Add a display image for the item that is currently being plotted.
+
 
 ### Stretch goals
 
 - Ability to log items bought and quantities, as well as when sold to track how well flipping is going.
 
-- Machine intelligence algorithm for buying and selling? (Probably wont bother)
+- AI to learn trends to advise for buying and selling? (overkill but why not eh?)

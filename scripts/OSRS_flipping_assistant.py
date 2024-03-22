@@ -1,6 +1,5 @@
 from tkinter import *
 import tkinter as tk
-# import customtkinter as ctk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import numpy as np
@@ -12,17 +11,14 @@ import os
 import utils
 from pathlib import Path
 from dataclasses import dataclass, field
+from items_manager import ItemsManager
+from mailer import Mailer
 
 dark_gray = "#333333"
 lighter_gray = "#444444"
 white = "#FFFFFF"
 vibrant_yellow = "#FFD700"
 dark_blue = "#00008B"
-
-class multipliers(Enum):
-    THOUSAND = 1
-    MILLION = 2
-    BILLION = 3
 
 @dataclass
 class PlotData():
@@ -44,7 +40,8 @@ class RuneScapeGUI():
         self.display_mode = "all"
         self.displayedItemName = None
 
-        self.master.title('Runescape Stock Market')
+        self.master.title('OSRS Flipping assistant')
+        self.mailer = Mailer()
         
         # Set color of self.master
         self.master.configure(bg=dark_gray)
@@ -52,22 +49,12 @@ class RuneScapeGUI():
         self.setup_frames()
 
         # Instantiate two plots as default on program load
-
-
-
         self.plots_data = [PlotData("Toxic blowpipe (empty)"), PlotData("Granite maul")]
 
         self.update_plot("Toxic blowpipe (empty)", 0, "all")
         self.update_plot("Granite maul", 1, "all")
-        
-    
-        # # creating the Matplotlib toolbar
-        # toolbar = NavigationToolbar2Tk(self.canvas,
-        #                             self.master)
-        # toolbar.update()
-    
-        # # placing the toolbar on the Tkinter window
-        # self.canvas.get_tk_widget().pack()
+
+        self.mailer.send_email("OSRS Flipping assistant started", "Hey, just to let you know, the program has started :).")
 
     def setup_frames(self):
         self.plot_frame = tk.Frame(self.master)
@@ -351,11 +338,17 @@ class RuneScapeGUI():
             plot.ax_hline = plot.axhline(y=low_horizontal, color=vibrant_yellow, linestyle='--')
 
         canvas.draw()
+    
 
-    def load_price_data_csv(self, itemName):
-        filePath = "pastPrices/" + itemName + ".csv"
-        print(filePath)
+def main():
 
-        my_data = genfromtxt(filePath, delimiter=',')
+    root = Tk()
 
-        return my_data
+    RS_itemsManager = ItemsManager()
+
+    gui = RuneScapeGUI(root, RS_itemsManager)
+
+    mainloop()
+
+if __name__ == "__main__":
+    main()

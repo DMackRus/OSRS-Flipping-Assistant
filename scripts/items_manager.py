@@ -1,34 +1,48 @@
 import json 
 import requests
-from itemClass import item
+from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 import os
 import utils
 
+@dataclass
+class Item():
+    name: str
+    id: int
+
 class ItemsManager():
 
     def __init__(self):
-        self.itemIds = json.load(open('items-search.json'))
-        tempFlipOpen = json.load(open('flippingItems.json'))
-        self.flippingItemNames = []
-        for i in range(len(tempFlipOpen)):
-            self.flippingItemNames.append(tempFlipOpen[i]["name"])
 
-        self.items = []
+        # Check if custom_items.json exists
+        if not os.path.exists('json/custom_items.json'):
+            utils.create_custom_item_ids_file()
+        
+        self.custom_items = json.load(open('json/custom_items.json'))
 
-        for i in range(len(self.flippingItemNames)):
-            itemId = self.lookupItemId(self.flippingItemNames[i])
+        print(self.custom_items)
 
-            if(os.path.exists('items/' + self.flippingItemNames[i] + '/trackData.json')):
-                with open('items/' + self.flippingItemNames[i] + '/trackData.json', 'r') as outfile:
-                    json_data = json.load(outfile)
+        # self.itemIds = json.load(open('items-search.json'))
+        # tempFlipOpen = json.load(open('flippingItems.json'))
+        # self.flippingItemNames = []
+        # for i in range(len(tempFlipOpen)):
+        #     self.flippingItemNames.append(tempFlipOpen[i]["name"])
 
-                self.items.append(item(self.flippingItemNames[i], itemId, json_data["high price alert"], json_data["low price alert"], json_data["last update date"]))
-            else:
-                self.createJsonFile(self.flippingItemNames[i])
+        # self.items = []
 
-                self.items.append(item(self.flippingItemNames[i], itemId, 0, 0, 0))
+        # for i in range(len(self.flippingItemNames)):
+        #     itemId = self.lookupItemId(self.flippingItemNames[i])
+
+        #     if(os.path.exists('items/' + self.flippingItemNames[i] + '/trackData.json')):
+        #         with open('items/' + self.flippingItemNames[i] + '/trackData.json', 'r') as outfile:
+        #             json_data = json.load(outfile)
+
+        #         self.items.append(item(self.flippingItemNames[i], itemId, json_data["high price alert"], json_data["low price alert"], json_data["last update date"]))
+        #     else:
+        #         self.createJsonFile(self.flippingItemNames[i])
+
+        #         self.items.append(item(self.flippingItemNames[i], itemId, 0, 0, 0))
 
     def create_json_file(self, itemName):
         baseDir = "items/"

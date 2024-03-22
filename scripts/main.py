@@ -3,30 +3,36 @@ import json
 import time
 from tkinter import *
 from collections import OrderedDict
-import pandas as pd
 from ttkwidgets.autocomplete import AutocompleteEntry
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 #import customtkinter as ctk
-from itemsManagerClass import ItemsManager
-import GUI as GUI
+from items_manager import ItemsManager, Item
+from GUI import RuneScapeGUI
+import os
+
+dark_gray = "#333333"
+vibrant_yellow = "#FFD700"
 
 def main():
-    baseDir = "items/"
-                
+
     root = Tk()
 
     RS_itemsManager = ItemsManager()
-    print("made items manager")
-    print(RS_itemsManager.flippingItemNames)
 
-    itemids = RS_itemsManager.itemIds
+    gui = RuneScapeGUI(root, RS_itemsManager)
 
-    for i in range(len(RS_itemsManager.flippingItemNames)):
-        print(i)
-        historical_data = RS_itemsManager.get_historical_data(RS_itemsManager.lookupItemId(RS_itemsManager.flippingItemNames[i]))
-        RS_itemsManager.save_price_data(historical_data, RS_itemsManager.flippingItemNames[i])
-        # os.makedirs(baseDir + RS_itemsManager.flippingItemNames[i], exist_ok=True)
+    mainloop()
+
+    # itemids = RS_itemsManager.itemIds
+
+    # update flipping items json, with item ids
+
+    # for i in range(len(RS_itemsManager.flippingItemNames)):
+    #     historical_data = RS_itemsManager.get_historical_data(RS_itemsManager.lookupItemId(RS_itemsManager.flippingItemNames[i]))
+    #     RS_itemsManager.save_price_data(historical_data, RS_itemsManager.flippingItemNames[i])
+
+    # When program starts up.
 
 
 
@@ -59,10 +65,6 @@ def main():
     # print(sortedItems.head(5))
 
     # mainloop()
-
-def updatePrices():
-    todayPrices = np.zeros(2)
-
 
 if __name__ == "__main__":
     main()

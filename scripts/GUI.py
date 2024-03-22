@@ -1,6 +1,6 @@
 from tkinter import *
 import tkinter as tk
-import customtkinter as ctk
+# import customtkinter as ctk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import numpy as np
@@ -169,6 +169,7 @@ class RuneScapeGUI():
     # ----------------- Callbacks -----------------
     def test_button_click(self):
         print("test button click")
+        utils.capture_window(self.master)
         
 
     def history_button_click(self, period, plot):
@@ -264,7 +265,6 @@ class RuneScapeGUI():
 
         # Check if item price history file exists
         if os.path.exists(file):
-            print("data file doesnt exist, lets create it")
             graph_data = utils.load_data(file)
         else:
             graph_data = self.items_manager.get_historical_data(item_name)

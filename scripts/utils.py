@@ -1,5 +1,6 @@
 import pickle
 import json
+from PIL import ImageGrab
 
 def save_data(data, filename):
     with open(filename, 'wb') as file:
@@ -32,3 +33,11 @@ def create_custom_item_ids_file():
     #create json file and save items
     with open('json/custom_items.json', 'w') as outfile:
         json.dump(items, outfile, default=lambda o: o.__dict__)
+
+def capture_window(window):
+    x = window.winfo_rootx()
+    y = window.winfo_rooty()
+    width = window.winfo_width()
+    height = window.winfo_height()    #get details about window
+    takescreenshot = ImageGrab.grab(bbox=(x, y, width, height))
+    takescreenshot.save("screenshot.png")

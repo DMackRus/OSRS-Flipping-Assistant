@@ -29,9 +29,9 @@ class PlotData():
     item_name: str = "None"
     data: list = field(default_factory=list)
     display_mode: str = "all"
-    horizontal: float = None
+    high_alert: float = None
+    low_alert: float = None
     
-
 
 class RuneScapeGUI():
     def __init__(self, master, ItemsManager):
@@ -51,7 +51,15 @@ class RuneScapeGUI():
 
         self.setup_frames()
 
-        self.plots_data = [PlotData(), PlotData()]
+        # Instantiate two plots as default on program load
+
+
+
+        self.plots_data = [PlotData("Toxic blowpipe (empty)"), PlotData("Granite maul")]
+
+        self.update_plot("Toxic blowpipe (empty)", 0, "all")
+        self.update_plot("Granite maul", 1, "all")
+        
     
         # # creating the Matplotlib toolbar
         # toolbar = NavigationToolbar2Tk(self.canvas,
@@ -118,6 +126,7 @@ class RuneScapeGUI():
 
         button_texts = ["all", "6 months", "3 months", "1 month", "week"]
 
+        # ----------------- left control panel -----------------------------
         self.item_select_left = AutocompleteEntry(
             self.plot_left_frame, 
             width=30, 
@@ -127,10 +136,14 @@ class RuneScapeGUI():
         self.item_select_left.bind('<FocusOut>', self.searchbar_callback_left)
         self.item_select_left.pack()
 
-        # frame.pack(expand=True)
         for text in button_texts:
             button = tk.Button(self.plot_left_frame, text=text, command=lambda period=text, plot="left": self.history_button_click(period, plot))
             button.pack(side=tk.RIGHT, anchor=tk.NE, padx=5, pady=5)
+
+        button = tk.Button(self.plot_left_frame, text="Save alerts", command= lambda plot="left": self.save_alerts(plot))
+        button.pack(side=tk.TOP, anchor=tk.NE, padx=5, pady=5)
+
+        # ----------------- right control panel -----------------------------
 
         self.item_select_right = AutocompleteEntry(
             self.plot_right_frame, 
@@ -145,6 +158,11 @@ class RuneScapeGUI():
             button = tk.Button(self.plot_right_frame, text=text, command=lambda period=text, plot = "right": self.history_button_click(period, plot))
             button.pack(side=tk.RIGHT, anchor=tk.NE, padx=5, pady=5)
 
+        button = tk.Button(self.plot_right_frame, text="Save alerts", command= lambda plot="right": self.save_alerts(plot))
+        button.pack(side=tk.TOP, anchor=tk.NE, padx=5, pady=5)
+
+        # ----------------- general controls -----------------------------
+
         button = tk.Button(self.general_controls_frame, text="Search", command=self.test_button_click)
         button.pack(side=tk.TOP, padx=5, pady=5)
 
@@ -158,9 +176,27 @@ class RuneScapeGUI():
 
         self.display_mode = period
         if(plot == "left"):
-            self.update_plot(self.item_select_left.get(), 0, period)
+            plot_data = self.plots_data[0]
+            item_name = plot_data.item_name
+            self.update_plot(item_name, 0, period)
         elif(plot == "right"):
-            self.update_plot(self.item_select_right.get(), 1, period)
+            plot_data = self.plots_data[1]
+            item_name = plot_data.item_name
+            self.update_plot(item_name, 1, period)
+
+    def save_alerts(self, plot):
+
+        if(plot == "left"):
+            plot_data = self.plots_data[0]
+            
+        elif(plot == "right"):
+            plot_data = self.plots_data[1]
+
+        item_name = plot_data.item_name
+
+        file = "data/" + str(item_name) + "/alerts.pkl"
+        alerts = {"high_alert": plot_data.high_alert, "low_alert": plot_data.low_alert}
+        utils.save_data(alerts, file)
 
 
     # Would be nice to combine these two functions into one function using lambda, but i cant 
@@ -188,16 +224,34 @@ class RuneScapeGUI():
         # If the left mouse button is clicked
         if event.button == 1:
             if event.xdata is not None and event.ydata is not None:
-                print(f'plot {plot}, x: {event.xdata}, y: {event.ydata}')
 
                 if(plot == "left"):
                     plot_data = self.plots_data[0]
-                    plot_data.horizontal = event.ydata
+                    plot_data.high_alert = event.ydata
                     plot = self.plot_left
                     canvas = self.canvas_left
+
                 elif(plot == "right"):
                     plot_data = self.plots_data[1]
-                    plot_data.horizontal = event.ydata
+                    plot_data.high_alert = event.ydata
+                    plot = self.plot_right
+                    canvas = self.canvas_right
+
+                self.draw_graph(plot_data, plot, canvas)
+
+        # if right mouse button is clicked
+        elif event.button == 3:
+            if event.xdata is not None and event.ydata is not None:
+
+                if(plot == "left"):
+                    plot_data = self.plots_data[0]
+                    plot_data.low_alert = event.ydata
+                    plot = self.plot_left
+                    canvas = self.canvas_left
+
+                elif(plot == "right"):
+                    plot_data = self.plots_data[1]
+                    plot_data.low_alert = event.ydata
                     plot = self.plot_right
                     canvas = self.canvas_right
 
@@ -214,6 +268,15 @@ class RuneScapeGUI():
             graph_data = utils.load_data(file)
         else:
             graph_data = self.items_manager.get_historical_data(item_name)
+
+        # Check if item price alerts exist
+        alerts_file = "data/" + str(item_name) + "/alerts.pkl"
+        if os.path.exists(alerts_file):
+            alerts = utils.load_data(alerts_file)
+            if "high_alert" in alerts:
+                self.plots_data[plot_number].high_alert = alerts["high_alert"]
+            if "low_alert" in alerts:
+                self.plots_data[plot_number].low_alert = alerts["low_alert"]
 
         # TODO this could be improved, maybe one day we will have more than 2 plots
         if(plot_number == 0):
@@ -253,7 +316,8 @@ class RuneScapeGUI():
 
         graph_data = plot_data.data
         item_name = plot_data.item_name
-        horizontal = plot_data.horizontal
+        high_horiozntal = plot_data.high_alert
+        low_horizontal = plot_data.low_alert
 
         if(graph_data[0] > 1_000_000_000):
             graph_data = [x / 1_000_000_000 for x in graph_data]
@@ -280,8 +344,11 @@ class RuneScapeGUI():
 
         plot.set_yticklabels(new_y_ticks)
 
-        if(horizontal is not None):
-            plot.ax_hline = plot.axhline(y=horizontal, color='r', linestyle='--')
+        if(high_horiozntal is not None):
+            plot.ax_hline = plot.axhline(y=high_horiozntal, color=vibrant_yellow, linestyle='--')
+
+        if(low_horizontal is not None):
+            plot.ax_hline = plot.axhline(y=low_horizontal, color=vibrant_yellow, linestyle='--')
 
         canvas.draw()
 

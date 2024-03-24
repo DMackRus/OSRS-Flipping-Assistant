@@ -37,7 +37,7 @@ class RuneScapeGUI():
     def __init__(self, master, ItemsManager):
         self.master = master
         self.master.title("GUI")
-        self.master.geometry("1000x500")
+        self.master.geometry("1200x500")
         self.master.resizable(True, True)
         self.items_manager = ItemsManager
 
@@ -334,21 +334,20 @@ class RuneScapeGUI():
         plot.cla()
         plot.plot(graph_data)
 
-        plot.set_title(item_name)
-        plot.set_xlabel("Time")
-        plot.set_ylabel("Price")
+        plot.set_title(item_name, color=white, size=18)
+        # plot.set_xlabel("Time")
+        plot.set_ylabel("Price", color=white)
 
         # Get item icon png
         icon = self.items_manager.get_item_icon(item_name)
         rgb_img = icon.convert('RGBA')
 
-        # img_path = 'example.png'
-        # img = plt.imread(img_path)
-        # new_size = (100, 100)  # Adjust the size as needed
-        # pil_img = icon.resize(new_size)
+        # Return the string of the best location to plot the legend
+        # legend_position = str(plot.legend(loc='best').get_window_extent())
+        # print(legend_position)
+        legend = plot.legend()
 
-        # Define the position and size of the image
-        xy = (0.9, 0.15)  # Adjust these coordinates to position the image
+        xy = (0.90, 0.15)  # Adjust these coordinates to position the image
         xycoords = 'axes fraction'
         imagebox = OffsetImage(rgb_img, zoom=0.5)
 
@@ -356,32 +355,26 @@ class RuneScapeGUI():
         ab = AnnotationBbox(imagebox, xy, xycoords=xycoords, frameon=False)
         plot.add_artist(ab)
 
-        # new_size = (100, 100)  # Adjust the size as needed
-        # pil_img = icon.resize(new_size)
-
-        # # Convert PIL image to numpy array
-        # np_img = np.array(pil_img)
-
-        # # Define the position to place the image
-        # x_pos, y_pos = 0.05, 0.05  # Adjust these coordinates as needed
-
-        # # Display the image on the plot
-        # plot.imshow(np_img, extent=[x_pos, x_pos + new_size[0]/plot.gcf().get_size_inches()[0], 
-        #                    y_pos, y_pos + new_size[1]/plot.gcf().get_size_inches()[1]], aspect='auto', zorder=100)
-
         y_ticks = plot.get_yticks()
         new_y_ticks = []
         for i in range(len(y_ticks)):
             y_ticks[i] = y_ticks[i]
             new_y_ticks.append(f'{y_ticks[i]:g}' + suffix)
 
-        plot.set_yticklabels(new_y_ticks)
+        plot.set_yticklabels(new_y_ticks, color=white)
+        plot.tick_params(axis='y', colors='white')
 
         if(high_horiozntal is not None):
             plot.ax_hline = plot.axhline(y=high_horiozntal, color=vibrant_yellow, linestyle='--')
 
         if(low_horizontal is not None):
             plot.ax_hline = plot.axhline(y=low_horizontal, color=vibrant_yellow, linestyle='--')
+
+        # Remove the plot frame
+        plot.spines['top'].set_visible(False)
+        plot.spines['right'].set_visible(False)
+        plot.spines['left'].set_visible(False)
+        plot.spines['bottom'].set_visible(False)
 
         canvas.draw()
     

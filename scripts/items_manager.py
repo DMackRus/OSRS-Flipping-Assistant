@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 import utils
+from PIL import Image
 
 @dataclass
 class Item():
@@ -33,22 +34,6 @@ class ItemsManager():
         with open('items/' + itemName + '/trackData.json', 'w') as outfile:
             outfile.write(temp)
 
-    def get_current_price_of_item(self):
-
-        base_url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/"
-
-        end_url = str(self.id) + ".json"
-
-        request_url = base_url + end_url
-
-        api_return = requests.get(request_url).json()
-
-        stringPrice = str(api_return["average"][list(api_return["average"])[-1]])
-
-        itemPrice = float(stringPrice)
-
-        return itemPrice
-
     def get_historical_data(self, itemId):
 
         base_url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/"
@@ -69,6 +54,35 @@ class ItemsManager():
             history_prices["values"].append(val)
 
         return history_prices
+    
+    def get_item_icon(self, item_name):
+
+        # Check if the item icon is already downloaded
+        file = 'data/' + item_name + '/icon.png'
+        if os.path.isfile(file):
+            # Load png file and return
+            return Image.open(file)
+        
+        # Get item id
+        item_id = self.custom_items[item_name]
+
+        base_url = "https://secure.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item="
+        end_url = str(item_id)
+        request_url = base_url + end_url
+
+        api_return = requests.get(request_url).json()
+        icon_url = api_return["item"]["icon_large"]     # Or can just use icon?
+        item_icon = requests.get(icon_url)
+
+        if item_icon.status_code == 200:
+            # Open the file in binary write mode and write the content of the response to it
+            with open(file, 'wb') as f:
+                f.write(item_icon.content)
+            print("Image downloaded successfully!")
+        else:
+            print("Failed to download image. Status code:", item_icon.status_code)
+
+        return Image.open(file)
 
     def save_price_data(self, price_data, item_name):
         #check if directory exists
@@ -77,4 +91,3 @@ class ItemsManager():
             os.makedirs(directory)
 
         utils.save_data(price_data, directory + '/price_history.pkl')
-        # priceHistory.tofile('pastPrices/' + itemName + '.csv', sep = ',')

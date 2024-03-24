@@ -2,6 +2,7 @@ from tkinter import *
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import numpy as np
 from numpy import genfromtxt
 from ttkwidgets.autocomplete import AutocompleteEntry
@@ -14,11 +15,14 @@ from dataclasses import dataclass, field
 from items_manager import ItemsManager
 from mailer import Mailer
 
+
 dark_gray = "#333333"
 lighter_gray = "#444444"
 white = "#FFFFFF"
 vibrant_yellow = "#FFD700"
 dark_blue = "#00008B"
+
+#pip install -r requirements.txt
 
 @dataclass
 class PlotData():
@@ -54,7 +58,7 @@ class RuneScapeGUI():
         self.update_plot("Toxic blowpipe (empty)", 0, "all")
         self.update_plot("Granite maul", 1, "all")
 
-        self.mailer.send_email("OSRS Flipping assistant started", "Hey, just to let you know, the program has started :).")
+        # self.mailer.send_email("OSRS Flipping assistant started", "Hey, just to let you know, the program has started :).")
 
     def setup_frames(self):
         self.plot_frame = tk.Frame(self.master)
@@ -74,10 +78,10 @@ class RuneScapeGUI():
 
     def add_plots(self, frame):
         # Figures to show item price data
-        self.figure_left = plt.Figure(figsize = (5, 3),
+        self.figure_left = plt.Figure(figsize = (6, 4),
                     dpi = 100)
         
-        self.figure_right = plt.Figure(figsize = (5, 3),
+        self.figure_right = plt.Figure(figsize = (6, 4),
                     dpi = 100)
         
         # Select colors for figure
@@ -156,7 +160,9 @@ class RuneScapeGUI():
     # ----------------- Callbacks -----------------
     def test_button_click(self):
         print("test button click")
-        utils.capture_window(self.master)
+        # utils.capture_window(self.master)
+
+        self.items_manager.get_item_icon(4151)
         
 
     def history_button_click(self, period, plot):
@@ -182,10 +188,18 @@ class RuneScapeGUI():
 
         item_name = plot_data.item_name
 
-        file = "data/" + str(item_name) + "/alerts.pkl"
-        alerts = {"high_alert": plot_data.high_alert, "low_alert": plot_data.low_alert}
-        utils.save_data(alerts, file)
+        alerts = {}
+        if(plot_data.high_alert is not None):
+            alerts["high_alert"] = plot_data.high_alert
 
+        if(plot_data.low_alert is not None):
+            alerts["low_alert"] = plot_data.low_alert
+
+        file = "data/" + str(item_name) + "/alerts.pkl"
+
+        # Check if alerts empty
+        if alerts:
+            utils.save_data(alerts, file)
 
     # Would be nice to combine these two functions into one function using lambda, but i cant 
     # figure it out
@@ -316,12 +330,44 @@ class RuneScapeGUI():
             graph_data = [x / 1_000 for x in graph_data]
             suffix = "k"
 
+        # Clear last plot and plot new data
         plot.cla()
         plot.plot(graph_data)
 
         plot.set_title(item_name)
         plot.set_xlabel("Time")
         plot.set_ylabel("Price")
+
+        # Get item icon png
+        icon = self.items_manager.get_item_icon(item_name)
+        rgb_img = icon.convert('RGBA')
+
+        # img_path = 'example.png'
+        # img = plt.imread(img_path)
+        # new_size = (100, 100)  # Adjust the size as needed
+        # pil_img = icon.resize(new_size)
+
+        # Define the position and size of the image
+        xy = (0.9, 0.15)  # Adjust these coordinates to position the image
+        xycoords = 'axes fraction'
+        imagebox = OffsetImage(rgb_img, zoom=0.5)
+
+        # Create an AnnotationBbox to overlay the image on the plot
+        ab = AnnotationBbox(imagebox, xy, xycoords=xycoords, frameon=False)
+        plot.add_artist(ab)
+
+        # new_size = (100, 100)  # Adjust the size as needed
+        # pil_img = icon.resize(new_size)
+
+        # # Convert PIL image to numpy array
+        # np_img = np.array(pil_img)
+
+        # # Define the position to place the image
+        # x_pos, y_pos = 0.05, 0.05  # Adjust these coordinates as needed
+
+        # # Display the image on the plot
+        # plot.imshow(np_img, extent=[x_pos, x_pos + new_size[0]/plot.gcf().get_size_inches()[0], 
+        #                    y_pos, y_pos + new_size[1]/plot.gcf().get_size_inches()[1]], aspect='auto', zorder=100)
 
         y_ticks = plot.get_yticks()
         new_y_ticks = []

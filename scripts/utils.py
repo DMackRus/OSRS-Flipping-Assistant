@@ -1,6 +1,7 @@
 import pickle
 import json
 from PIL import ImageGrab
+import datetime as dt
 
 def save_data(data, filename):
     with open(filename, 'wb') as file:
@@ -41,3 +42,10 @@ def capture_window(window):
     height = window.winfo_height()    #get details about window
     takescreenshot = ImageGrab.grab(bbox=(x, y, width, height))
     takescreenshot.save("screenshot.png")
+
+def convert_unix_to_timestamp(unix_time):
+    unix_time = int(unix_time) // 1000
+    date = dt.datetime.fromtimestamp(unix_time)
+    formatted_date = date.strftime('%Y-%m-%d')
+    return formatted_date
+

@@ -23,13 +23,9 @@ Information currently comes from [OSRS wiki](https://runescape.wiki/w/Applicatio
 
 - Start tracking price data periodically and adding it to data folder. OSRS wiki only shows last 6 months.
 
-- Better x axis for graphs, using dates.
-
 - Investigate using runelite publicly available [wiki](https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices). Has more up to date prices, and volume trends.
 
 - Add a requirements.txt to easily install dependancies
-
-- Add a display image for the item that is currently being plotted.
 
 
 ### Stretch goals

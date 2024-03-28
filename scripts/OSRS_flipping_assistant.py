@@ -28,6 +28,7 @@ dark_blue = "#026dc4"
 class PlotData():
     item_name: str = "None"
     data: list = field(default_factory=list)
+    time_labels: list = field(default_factory=list)
     display_mode: str = "All"
     high_alert: float = None
     low_alert: float = None
@@ -78,10 +79,10 @@ class RuneScapeGUI():
 
     def add_plots(self, frame):
         # Figures to show item price data
-        self.figure_left = plt.Figure(figsize = (6, 4),
+        self.figure_left = plt.Figure(figsize = (6, 4.5),
                     dpi = 100)
         
-        self.figure_right = plt.Figure(figsize = (6, 4),
+        self.figure_right = plt.Figure(figsize = (6, 4.5),
                     dpi = 100)
         
         # Select colors for figure
@@ -169,7 +170,6 @@ class RuneScapeGUI():
         # utils.capture_window(self.master)
 
     def history_button_click(self, period, plot):
-        print(f"period: {period}, plot: {plot}")
 
         self.display_mode = period
         if(plot == "left"):
@@ -295,6 +295,7 @@ class RuneScapeGUI():
         prices, time_labels = self.reduce_display_data(graph_data, display_mode)
 
         plot_data.data = prices
+        plot_data.time_labels = time_labels
         plot_data.item_name = item_name
         plot_data.display_mode = display_mode
 
@@ -320,7 +321,9 @@ class RuneScapeGUI():
 
     def draw_graph(self, plot_data, plot, canvas):
 
+        # Aliases
         graph_data = plot_data.data
+        time_labels = plot_data.time_labels
         item_name = plot_data.item_name
         high_horiozntal = plot_data.high_alert
         low_horizontal = plot_data.low_alert
@@ -368,6 +371,16 @@ class RuneScapeGUI():
 
         plot.set_yticklabels(new_y_ticks, color=white)
         plot.tick_params(axis='y', colors='white')
+        plot.tick_params(axis='x', colors='white')
+
+        # Get 10 equally spaced time labels
+        time_indices = np.linspace(0, len(time_labels) - 1, num=10, dtype=int)
+
+        # Get the time labels for the x axis
+        time_labels = [utils.convert_unix_to_timestamp(time_labels[i]) for i in time_indices]
+
+        plot.set_xticks(time_indices)
+        plot.set_xticklabels(time_labels, rotation=45, color=white, size=6)
 
         if(high_horiozntal is not None):
             plot.ax_hline = plot.axhline(y=high_horiozntal, color=vibrant_yellow, linestyle='--')

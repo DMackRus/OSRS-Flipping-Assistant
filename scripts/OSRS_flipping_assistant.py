@@ -20,7 +20,7 @@ dark_gray = "#333333"
 lighter_gray = "#444444"
 white = "#FFFFFF"
 vibrant_yellow = "#FFD700"
-dark_blue = "#00008B"
+dark_blue = "#026dc4"
 
 #pip install -r requirements.txt
 
@@ -28,7 +28,7 @@ dark_blue = "#00008B"
 class PlotData():
     item_name: str = "None"
     data: list = field(default_factory=list)
-    display_mode: str = "all"
+    display_mode: str = "All"
     high_alert: float = None
     low_alert: float = None
     
@@ -41,7 +41,7 @@ class RuneScapeGUI():
         self.master.resizable(True, True)
         self.items_manager = ItemsManager
 
-        self.display_mode = "all"
+        self.display_mode = "All"
         self.displayedItemName = None
 
         self.master.title('OSRS Flipping assistant')
@@ -55,8 +55,8 @@ class RuneScapeGUI():
         # Instantiate two plots as default on program load
         self.plots_data = [PlotData("Toxic blowpipe (empty)"), PlotData("Granite maul")]
 
-        self.update_plot("Toxic blowpipe (empty)", 0, "all")
-        self.update_plot("Granite maul", 1, "all")
+        self.update_plot("Toxic blowpipe (empty)", 0, "All")
+        self.update_plot("Granite maul", 1, "All")
 
         # self.mailer.send_email("OSRS Flipping assistant started", "Hey, just to let you know, the program has started :).")
 
@@ -115,7 +115,7 @@ class RuneScapeGUI():
 
     def add_controls(self):
 
-        button_texts = ["all", "6 months", "3 months", "1 month", "week"]
+        button_texts = ["All", "Year", "Half-Year", "Quarter", "Month", "Week"]
 
         # ----------------- left control panel -----------------------------
         self.item_select_left = AutocompleteEntry(
@@ -128,10 +128,12 @@ class RuneScapeGUI():
         self.item_select_left.pack()
 
         for text in button_texts:
-            button = tk.Button(self.plot_left_frame, text=text, command=lambda period=text, plot="left": self.history_button_click(period, plot))
-            button.pack(side=tk.RIGHT, anchor=tk.NE, padx=5, pady=5)
+            button = tk.Button(self.plot_left_frame, text=text, command=lambda period=text,
+                                plot="left": self.history_button_click(period, plot), bg=lighter_gray, fg=white)
+            button.pack(side=tk.RIGHT, anchor=tk.NE, pady=5)
 
-        button = tk.Button(self.plot_left_frame, text="Save alerts", command= lambda plot="left": self.save_alerts(plot))
+        button = tk.Button(self.plot_left_frame, text="Save alerts",
+                            command= lambda plot="left": self.save_alerts(plot), bg=lighter_gray, fg=white)
         button.pack(side=tk.TOP, anchor=tk.NE, padx=5, pady=5)
 
         # ----------------- right control panel -----------------------------
@@ -141,29 +143,30 @@ class RuneScapeGUI():
             width=30, 
             font=('Times', 18),
             completevalues=self.items_manager.custom_items.keys(),
+            background=lighter_gray,
         )
         self.item_select_right.bind('<FocusOut>', self.searchbar_callback_right)
         self.item_select_right.pack()
 
         for text in button_texts:
-            button = tk.Button(self.plot_right_frame, text=text, command=lambda period=text, plot = "right": self.history_button_click(period, plot))
-            button.pack(side=tk.RIGHT, anchor=tk.NE, padx=5, pady=5)
+            button = tk.Button(self.plot_right_frame, text=text, command=lambda period=text,
+                                plot = "right": self.history_button_click(period, plot), bg=lighter_gray, fg=white)
+            button.pack(side=tk.RIGHT, anchor=tk.NE, pady=5)
 
-        button = tk.Button(self.plot_right_frame, text="Save alerts", command= lambda plot="right": self.save_alerts(plot))
+        button = tk.Button(self.plot_right_frame, text="Save alerts",
+                            command= lambda plot="right": self.save_alerts(plot), bg=lighter_gray, fg=white)
         button.pack(side=tk.TOP, anchor=tk.NE, padx=5, pady=5)
 
         # ----------------- general controls -----------------------------
 
-        button = tk.Button(self.general_controls_frame, text="Search", command=self.test_button_click)
+        button = tk.Button(self.general_controls_frame, text="TEMPORARY",
+                            command=self.test_button_click, bg=lighter_gray, fg=white)
         button.pack(side=tk.TOP, padx=5, pady=5)
 
     # ----------------- Callbacks -----------------
     def test_button_click(self):
         print("test button click")
         # utils.capture_window(self.master)
-
-        self.items_manager.get_item_icon(4151)
-        
 
     def history_button_click(self, period, plot):
         print(f"period: {period}, plot: {plot}")
@@ -259,7 +262,7 @@ class RuneScapeGUI():
 
                 self.draw_graph(plot_data, plot, canvas)
 
-    def update_plot(self, item_name, plot_number, display_mode="all"):
+    def update_plot(self, item_name, plot_number, display_mode="All"):
 
         graph_data = None
         file = "data/" + str(item_name) + "/price_history.pkl"
@@ -279,7 +282,7 @@ class RuneScapeGUI():
             if "low_alert" in alerts:
                 self.plots_data[plot_number].low_alert = alerts["low_alert"]
 
-        # TODO this could be improved, maybe one day we will have more than 2 plots
+        # TODO this could be improved, maybe we will have more than 2 plots
         if(plot_number == 0):
             plot = self.plot_left
             canvas = self.canvas_left
@@ -302,15 +305,17 @@ class RuneScapeGUI():
         time_labels = graph_data['time_stamps']
         prices = graph_data['values']
 
-        if(mode == "all"):
+        if(mode == "All"):
             return prices, time_labels
-        elif(mode == "6 months"):
+        elif(mode == "Year"):
+            return prices[-365:], time_labels[-365:]
+        elif(mode == "Half-Year"):
             return prices[-180:], time_labels[-180:]
-        elif(mode == "3 months"):
+        elif(mode == "Quarter"):
             return prices[-90:], time_labels[-90:]
-        elif(mode == "1 month"):
+        elif(mode == "Month"):
             return prices[-30:], time_labels[-30:]
-        elif(mode == "week"):
+        elif(mode == "Week"):
             return prices[-7:], time_labels[-7:]
 
     def draw_graph(self, plot_data, plot, canvas):
@@ -332,7 +337,7 @@ class RuneScapeGUI():
 
         # Clear last plot and plot new data
         plot.cla()
-        plot.plot(graph_data)
+        plot.plot(graph_data, color=dark_blue)
 
         plot.set_title(item_name, color=white, size=18)
         # plot.set_xlabel("Time")
@@ -345,7 +350,7 @@ class RuneScapeGUI():
         # Return the string of the best location to plot the legend
         # legend_position = str(plot.legend(loc='best').get_window_extent())
         # print(legend_position)
-        legend = plot.legend()
+        # legend = plot.legend()
 
         xy = (0.90, 0.15)  # Adjust these coordinates to position the image
         xycoords = 'axes fraction'

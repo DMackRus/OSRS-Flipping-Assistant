@@ -32,4 +32,4 @@ Information currently comes from [OSRS wiki](https://runescape.wiki/w/Applicatio
 
 - Ability to log items bought and quantities, as well as when sold to track how well flipping is going.
 
-- AI to learn trends to advise for buying and selling? (overkill but why not eh?)
+- AI to learn trends to advise for buying and selling? (overkill but why not?)

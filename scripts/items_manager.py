@@ -24,6 +24,11 @@ class ItemsManager():
 
         print(self.custom_items)
 
+        self.osrs_api_headers = {
+            'User-Agent': 'OSRS flipping Assitant',
+            'From': '@thespanishinquisition6694 on Discord'  # This is another valid field
+        }
+
     def create_json_file(self, itemName):
         baseDir = "items/"
 
@@ -36,22 +41,25 @@ class ItemsManager():
 
     def get_historical_data(self, itemId):
 
-        base_url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/"
+        #base_url = "http://services.runescape.com/m=itemdb_oldschool/api/graph/"
 
-        end_url = str(itemId) + ".json"
+        base_url = "https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=24h&id="
+
+        #end_url = str(itemId) + ".json"
+        end_url = str(itemId)
 
         request_url = base_url + end_url
 
-        api_return = requests.get(request_url).json()
+        api_return = requests.get(request_url, headers = self.osrs_api_headers).json()
 
         history_prices = {
             "time_stamps": [],
             "values": []
         }
 
-        for key, val in api_return["daily"].items():
-            history_prices["time_stamps"].append(key)
-            history_prices["values"].append(val)
+        for data in api_return["data"]:
+            history_prices["time_stamps"].append(data["timestamp"])
+            history_prices["values"].append(data["avgHighPrice"])
 
         return history_prices
     

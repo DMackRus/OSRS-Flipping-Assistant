@@ -267,11 +267,13 @@ class RuneScapeGUI():
         graph_data = None
         file = "data/" + str(item_name) + "/price_history.pkl"
 
+        item_id = self.items_manager.custom_items[item_name]
+
         # Check if item price history file exists
         if os.path.exists(file):
             graph_data = utils.load_data(file)
         else:
-            graph_data = self.items_manager.get_historical_data(item_name)
+            graph_data = self.items_manager.get_historical_data(item_id)
 
         # Check if item price alerts exist
         alerts_file = "data/" + str(item_name) + "/alerts.pkl"
@@ -346,22 +348,22 @@ class RuneScapeGUI():
         # plot.set_xlabel("Time")
         plot.set_ylabel("Price", color=white)
 
-        # Get item icon png
-        icon = self.items_manager.get_item_icon(item_name)
-        rgb_img = icon.convert('RGBA')
-
         # Return the string of the best location to plot the legend
         # legend_position = str(plot.legend(loc='best').get_window_extent())
         # print(legend_position)
         # legend = plot.legend()
 
-        xy = (0.90, 0.15)  # Adjust these coordinates to position the image
-        xycoords = 'axes fraction'
-        imagebox = OffsetImage(rgb_img, zoom=0.5)
+        # Get item icon png
+        # icon = self.items_manager.get_item_icon(item_name)
+        # rgb_img = icon.convert('RGBA')
+
+        # xy = (0.90, 0.15)  # Adjust these coordinates to position the image
+        # xycoords = 'axes fraction'
+        # imagebox = OffsetImage(rgb_img, zoom=0.5)
 
         # Create an AnnotationBbox to overlay the image on the plot
-        ab = AnnotationBbox(imagebox, xy, xycoords=xycoords, frameon=False)
-        plot.add_artist(ab)
+        # ab = AnnotationBbox(imagebox, xy, xycoords=xycoords, frameon=False)
+        # plot.add_artist(ab)
 
         y_ticks = plot.get_yticks()
         new_y_ticks = []

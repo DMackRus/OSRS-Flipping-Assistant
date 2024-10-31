@@ -65,6 +65,10 @@ class ItemsManager():
     
     def get_item_icon(self, item_name):
 
+        # Check if item folder exists, if it doesnt create one
+        if not os.path.exists('data/' + item_name):
+            os.makedirs('data/' + item_name)
+
         # Check if the item icon is already downloaded
         file = 'data/' + item_name + '/icon.png'
         if os.path.isfile(file):
@@ -82,6 +86,7 @@ class ItemsManager():
         icon_url = api_return["item"]["icon_large"]     # Or can just use icon?
         item_icon = requests.get(icon_url)
 
+        # If status request sucessful
         if item_icon.status_code == 200:
             # Open the file in binary write mode and write the content of the response to it
             with open(file, 'wb') as f:

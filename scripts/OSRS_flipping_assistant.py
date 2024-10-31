@@ -330,6 +330,7 @@ class RuneScapeGUI():
         high_horiozntal = plot_data.high_alert
         low_horizontal = plot_data.low_alert
 
+        # TODO: we should change this to check if any value is above 1_000_000_000
         if(graph_data[0] > 1_000_000_000):
             graph_data = [x / 1_000_000_000 for x in graph_data]
             suffix = "b"
@@ -354,16 +355,16 @@ class RuneScapeGUI():
         # legend = plot.legend()
 
         # Get item icon png
-        # icon = self.items_manager.get_item_icon(item_name)
-        # rgb_img = icon.convert('RGBA')
+        icon = self.items_manager.get_item_icon(item_name)
+        rgb_img = icon.convert('RGBA')
 
-        # xy = (0.90, 0.15)  # Adjust these coordinates to position the image
-        # xycoords = 'axes fraction'
-        # imagebox = OffsetImage(rgb_img, zoom=0.5)
+        xy = (0.90, 0.15)  # Adjust these coordinates to position the image
+        xycoords = 'axes fraction'
+        imagebox = OffsetImage(rgb_img, zoom=0.5)
 
         # Create an AnnotationBbox to overlay the image on the plot
-        # ab = AnnotationBbox(imagebox, xy, xycoords=xycoords, frameon=False)
-        # plot.add_artist(ab)
+        ab = AnnotationBbox(imagebox, xy, xycoords=xycoords, frameon=False)
+        plot.add_artist(ab)
 
         y_ticks = plot.get_yticks()
         new_y_ticks = []

@@ -27,6 +27,10 @@ Information currently comes from [OSRS wiki](https://runescape.wiki/w/Applicatio
 
 - Add a requirements.txt to easily install dependancies
 
+- Fix dates on bottom of graph
+
+- Add volume trends to graphs
+
 
 ### Stretch goals
 
